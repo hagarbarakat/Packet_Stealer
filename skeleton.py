@@ -1,3 +1,9 @@
+import socket
+import binascii
+import sys
+import struct
+
+
 class IpPacket(object):
     """
     Represents the *required* data to be extracted from an IP packet.
@@ -27,6 +33,7 @@ class TcpPacket(object):
 def parse_raw_ip_addr(raw_ip_addr: bytes) -> str:
     # Converts a byte-array IP address to a string
     # the input is on the form b'\xaa\xab'... a byte array
+    for i in 
     return "0.0.0.0"
 
 
@@ -39,6 +46,12 @@ def parse_application_layer_packet(ip_packet_payload: bytes) -> TcpPacket:
 def parse_network_layer_packet(ip_packet: bytes) -> IpPacket:
     # Parses raw bytes of an IPv4 packet
     # That's a byte literal (~byte array) check resources section
+    """
+    extract -> protocol, ihl, source_address, destination_address, payload 
+    """
+    unpacked = struct.unpack("!BBHHHBBH4s4s", ip_packet)
+    protocol = unpacked[6]
+    print(protocol)
     return IpPacket(-1, -1, "0.0.0.0", "0.0.0.0", b'')
 
 
@@ -49,7 +62,14 @@ def main():
     # iface_name = "lo"
     # stealer.setsockopt(socket.SOL_SOCKET,
     #                    socket.SO_BINDTODEVICE, bytes(iface_name, "ASCII"))
+    socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+ 
     while True:
+        packet, addr = socket.recvfrom(4096)
+        print(packet)
+        #packet_hexa = binascii.hexlify(packet)
+        #print(packet_hexa)
+        parse_network_layer_packet(packet)
         # Receive packets and do processing here
         pass
     pass
