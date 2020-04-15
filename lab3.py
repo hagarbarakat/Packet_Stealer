@@ -54,7 +54,7 @@ def parse_application_layer_packet(ip_packet_payload: bytes) -> TcpPacket:
 def disp_application_layer_packet(tcp_packet: TcpPacket):
     print("-TCP Header:")
     print("------------")
-    print("\t-Protocol :", tcp_packet.src_port," -Destination port :",tcp_packet.dst_port)
+    print("\t-Source port :", tcp_packet.src_port," -Destination port :",tcp_packet.dst_port)
     print("\t-Data Offset:", tcp_packet.data_offset)
     try:
         print("\t-TCP Data:\n")
@@ -71,6 +71,7 @@ def parse_network_layer_packet(ip_packet: bytes) -> IpPacket:
     unpacked = struct.unpack("!BBHHHBBH4s4s", ip_packet[0:20])
     protocol = unpacked[6]
     version = unpacked[0]
+    print("Protocol version :", version >> 4)
     ihl = (version & 0xF)
     length = ihl * 4
     src_addr = parse_raw_ip_addr(unpacked[8])
@@ -81,7 +82,9 @@ def parse_network_layer_packet(ip_packet: bytes) -> IpPacket:
 def disp_network_layer_packet(ip_packet: IpPacket):
     print("-IP Header:")
     print("-----------")
-    print("\t-Protocol :", ip_packet.protocol," -ihl :",ip_packet.ihl)
+    if ip_packet.protocol == 6:
+        type = "TCP"
+        print("\t-Protocol :", type," -ihl :",ip_packet.ihl)
     print("\t-Source_address :", ip_packet.source_address,"-Destination_address :",ip_packet.destination_address)
 
 
